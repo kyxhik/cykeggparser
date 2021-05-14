@@ -28,12 +28,13 @@ public class KGMLCreator {
     boolean biopax2 = false;
     boolean biopax3 = false;
     boolean kgml = false;
-
+    boolean sbml = false;
     public void setFilterForConversion(int filterForConversion) {
         switch (filterForConversion) {
             case KGMLConverter.BioPAX2: {
                 this.biopax2 = true;
                 this.biopax3 = false;
+                this.sbml = false;
                 this.kgml = false;
                 break;
             }
@@ -41,12 +42,21 @@ public class KGMLCreator {
                 this.biopax2 = false;
                 this.biopax3 = true;
                 this.kgml = false;
+                this.sbml = false;
+                break;
+            }
+            case KGMLConverter.SBML: {
+            	this.biopax2 = false;
+                this.biopax3 = false;
+                this.kgml = false;
+                this.sbml = true;
                 break;
             }
             default: {
                 this.biopax2 = false;
                 this.biopax3 = false;
                 this.kgml = true;
+                this.sbml = false;
                 break;
             }
         }

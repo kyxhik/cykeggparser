@@ -64,6 +64,7 @@ public class KEGGParserPlugin extends AbstractCyActivator {
     public static KeggSaveAsKGMLAction keggSaveAsKGMLAction;
     public static KeggSaveAsBioPAX2Action keggSaveAsBioPAX2Action;
     public static KeggSaveAsBioPAX3Action keggSaveAsBioPAX3Action;
+    public static KeggSaveAsSBML keggSaveAsSBML;
     public static KEGGTuningAction keggTuningAction;
     public static KeggWebLoadAction keggWebLoadAction;
     public static KeggHelpAction keggHelpAction;
@@ -99,6 +100,7 @@ public class KEGGParserPlugin extends AbstractCyActivator {
         keggSaveAsKGMLAction = new KeggSaveAsKGMLAction();
         keggSaveAsBioPAX2Action = new KeggSaveAsBioPAX2Action();
         keggSaveAsBioPAX3Action = new KeggSaveAsBioPAX3Action();
+        keggSaveAsSBML = new KeggSaveAsSBML();
         keggTuningAction = new KEGGTuningAction();
         keggWebLoadAction = new KeggWebLoadAction();
         keggHelpAction = new KeggHelpAction();
@@ -128,6 +130,7 @@ public class KEGGParserPlugin extends AbstractCyActivator {
         registerService(bc, keggSaveAsKGMLAction, CyAction.class, new Properties());
         registerService(bc, keggSaveAsBioPAX2Action, CyAction.class, new Properties());
         registerService(bc, keggSaveAsBioPAX3Action, CyAction.class, new Properties());
+        registerService(bc, keggSaveAsSBML, CyAction.class, new Properties());
         registerService(bc, keggTuningAction, CyAction.class, new Properties());
         registerService(bc, keggWebLoadAction, CyAction.class, new Properties());
         registerService(bc, keggHelpAction, CyAction.class, new Properties());
