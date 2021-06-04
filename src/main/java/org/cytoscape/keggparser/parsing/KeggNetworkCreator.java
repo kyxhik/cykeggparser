@@ -19,6 +19,7 @@ import org.cytoscape.view.vizmap.mappings.DiscreteMapping;
 
 import java.awt.*;
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -28,6 +29,7 @@ public class KeggNetworkCreator {
     private CyNetworkView networkView;
     private static VisualStyle visualStyle;
     private Graph graph;
+    private String title;
 
     private boolean isForPSA = false;
 
@@ -58,6 +60,7 @@ public class KeggNetworkCreator {
     private void parseKgml(File kgml) throws Exception {
 
         Parser parser = new Parser();
+        
         try {
             graph = parser.parse(kgml);
         } catch (Exception e) {
@@ -67,7 +70,16 @@ public class KeggNetworkCreator {
             throw new Exception("The parsed network was empty.");
         if (graph.getOrder() == 0)
             throw new Exception("The network contained no nodes");
-
+        
+       if (graph.getTitle().contains(" ")) 
+        	title = graph.getTitle().replace(" ", "_");
+        else 
+            title = graph.getTitle();
+        
+        
+        ParsingReportGenerator.getInstance().appendLine("Title is: " + title);
+        		
+        
 
         try {
             if (EKeggProps.ProcessCompounds.getOldValue()) {
@@ -108,8 +120,16 @@ public class KeggNetworkCreator {
     private void loadNetworkComponents() throws Exception {
         try {
             network = KEGGParserPlugin.networkFactory.createNetwork();
-            network.getRow(network).set(CyNetwork.NAME, network.getSUID() + "_" + graph.getTitle());
+           // if (graph.getTitle().contains(" ")) 
+          //  	title = graph.getTitle().replace(" ", "_");
+           // else 
+             //   title = graph.getTitle();
+            
+            
+            ParsingReportGenerator.getInstance().appendLine("Title is: " + title);
+            network.getRow(network).set(CyNetwork.NAME, network.getSUID() + "_" + title.replace("-", "_"));
             networkID = network.getSUID();
+           
         } catch (Exception e) {
             throw new Exception("Something went wrong during network initialization: " + e.getMessage(), e);
         }
@@ -349,7 +369,7 @@ public class KeggNetworkCreator {
     private void loadGraphAttributes() throws Exception {
         try {
             CyTable networkTable = network.getDefaultNetworkTable();
-            networkTable.setTitle(graph.getTitle());
+            networkTable.setTitle(title);
             CyRow networkRow = networkTable.getRow(networkID);
 
             for (EKGMLNetworkAttrs attr : EKGMLNetworkAttrs.values()) {
@@ -358,7 +378,7 @@ public class KeggNetworkCreator {
             }
 
 
-            networkRow.set(EKGMLNetworkAttrs.TITLE.getAttrName(), graph.getTitle());
+            networkRow.set(EKGMLNetworkAttrs.TITLE.getAttrName(), title);
             networkRow.set(EKGMLNetworkAttrs.NUMBER.getAttrName(), graph.getNumber());
             networkRow.set(EKGMLNetworkAttrs.LINK.getAttrName(), graph.getLink());
             networkRow.set(EKGMLNetworkAttrs.IMAGE.getAttrName(), graph.getImage());

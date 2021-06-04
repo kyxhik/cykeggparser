@@ -129,11 +129,13 @@ public class KeggSaveAsBioPAXAction extends AbstractCyAction {
                 taskMonitor.setStatusMessage("Converting KGML file " + kgmlFile.getAbsolutePath()
                         + " to " + suffix + " file");
                 KGMLConverter kgmlConverter = new KGMLConverter();
-                boolean success;
-                success = kgmlConverter.translateFromCmd(kgmlFile, outFilePath,
+               
+                kgmlConverter.translateFromCmd(kgmlFile, outFilePath,
                         bioPaxLevel, taskMonitor, this);
-
-                if (success) {
+                ParsingReportGenerator.getInstance().appendLine("outfile is:" + outFile);
+                ParsingReportGenerator.getInstance().appendLine("outfile length is: " + outFile.length());
+               
+                if (outFile.exists() && outFile.length() >0) {
                     String successMessage = "BioPAX file " + outFilePath + " successfully generated.";
                     taskMonitor.setStatusMessage(successMessage);
                     ParsingReportGenerator.getInstance().appendLine(successMessage);
@@ -182,6 +184,10 @@ public class KeggSaveAsBioPAXAction extends AbstractCyAction {
             kgmlFileName = outFile.getName().replace(suffix, ".xml");
         else
             kgmlFileName = outFile.getName() + ".xml";
+        
+        if (outFile.getName().contains(" "))
+        	kgmlFileName = outFile.getName().replace(" ", "_");
+        
         File kgmlDir = new File(KEGGParserPlugin.getKEGGParserDir(), "/kgml");
         if (!kgmlDir.exists())
             if (!kgmlDir.mkdir()) {

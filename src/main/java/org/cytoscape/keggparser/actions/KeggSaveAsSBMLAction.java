@@ -49,12 +49,20 @@ public class KeggSaveAsSBMLAction extends AbstractCyAction {
 
 
 		public File getOutFile() {
+			
 			return outFile;
+			
 		}
-
+		
 		public void actionPerformed(ActionEvent e) {
-	        outFile = getSelectedFileFromSaveDialog();
+			
+			
+			outFile = getSelectedFileFromSaveDialog();
+			
+			
 	        if (outFile != null) {
+	        	
+		        
 	            writeOutFileDirectory();
 	            // Create Task
 	            final SaveSBMLTask task = new SaveSBMLTask(outFile.getAbsolutePath());
@@ -63,8 +71,10 @@ public class KeggSaveAsSBMLAction extends AbstractCyAction {
 	    }
 		
 		private void writeOutFileDirectory() {
-	        if (outFile != null) {
+			
+			if (outFile != null) {
 	            try {
+	            	
 	                PrintWriter recentDirWriter = new PrintWriter(saveDialog.getRecentDir());
 	                recentDirWriter.write(outFile.getParent());
 	                recentDirWriter.close();
@@ -77,11 +87,13 @@ public class KeggSaveAsSBMLAction extends AbstractCyAction {
 		private File getSelectedFileFromSaveDialog() {
 	        
 	            saveDialog = new KeggSaveDialog(".sbml");
-	        
-	        
+	            
+	            
 	        int response = saveDialog.showSaveDialog(KEGGParserPlugin.cytoscapeDesktopService.getJFrame());
 	        if (response == KeggSaveDialog.CANCEL_OPTION)
 	            return null;
+	        
+			  
 	        return saveDialog.getSelectedFile();
 	    }
 
@@ -96,6 +108,7 @@ public class KeggSaveAsSBMLAction extends AbstractCyAction {
 
 	        public SaveSBMLTask(String outFilePath) {
 	            this.outFilePath= outFilePath;
+	            
 	            super.cancelled = false;
 	        }
 		
@@ -107,7 +120,7 @@ public class KeggSaveAsSBMLAction extends AbstractCyAction {
 	            taskMonitor.setStatusMessage("Saving KGML file.\n\nIt may take a while.\nPlease wait...");
 	            ParsingReportGenerator.getInstance().appendLine("Saving the network as SBML File to " +
 	                    outFilePath);
-	            taskMonitor.setProgress(1);
+	            taskMonitor.setProgress(0);
 		
 	            try {
 	                File existingFile = new File(outFilePath);
@@ -117,18 +130,21 @@ public class KeggSaveAsSBMLAction extends AbstractCyAction {
 	                taskMonitor.setStatusMessage("Converting KGML file " + kgmlFile.getAbsolutePath()
 	                        + " to " + suffix + " file");
 	                KGMLConverter kgmlConverter = new KGMLConverter();
-	                boolean success;
-	                success = kgmlConverter.translateFromCmdtoSBML(kgmlFile, outFilePath,
+	                
+	                kgmlConverter.translateFromCmdtoSBML(kgmlFile, outFilePath,
 	                        SBMLLevel, taskMonitor, this);
 
-	                if (success) {
+	                if (outFile.exists() && outFile.length() >0) {
 	                    String successMessage = "SBML File " + outFilePath + " successfully generated.";
 	                    taskMonitor.setStatusMessage(successMessage);
 	                    ParsingReportGenerator.getInstance().appendLine(successMessage);
 	                    taskMonitor.setProgress(1);
 	                } else {
 	                    ParsingReportGenerator.getInstance().appendLine("Problem saving network as " + suffix);
-	                    throw new Exception("Problem saving network as " + suffix);
+	                    if (outFile.getName().contains("-"));
+	                    
+	                    
+	                    throw new Exception("The network name contains an invalid character \"-\"");
 	                }
 	            } catch (Exception e) {
 	                throw new Exception("Error while saving KGML " + e.getMessage());
@@ -167,6 +183,11 @@ public class KeggSaveAsSBMLAction extends AbstractCyAction {
 	            kgmlFileName = outFile.getName().replace(suffix, ".xml");
 	        else
 	            kgmlFileName = outFile.getName() + ".xml";
+	        
+	        
+	      //  if (outFile.getName().contains(" "))
+	        //	kgmlFileName = outFile.getName().replace(" ", "_");
+	        
 	        File kgmlDir = new File(KEGGParserPlugin.getKEGGParserDir(), "/kgml");
 	        if (!kgmlDir.exists())
 	            if (!kgmlDir.mkdir()) {

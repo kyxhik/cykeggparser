@@ -16,7 +16,7 @@ public class KGMLConverter {
     public static final int SBML = 2;
     public static final String BioPAX_level2 = "BioPAX_level2";
     public static final String BioPAX_level3 = "BioPAX_level3";
-    public static final String SBML_file = "SBML_file";
+    public static final String SBML_file = "SBML";
     File keggTranslatorJarFile;
     private Thread executeCommandThread;
     private String command;
@@ -31,7 +31,7 @@ public class KGMLConverter {
         }
     }
 
-    public boolean translateFromCmdtoSBML(File kgmlFile, String outFilePath, int SBMLLevel, TaskMonitor taskMonitor,
+    public void translateFromCmdtoSBML(File kgmlFile, String outFilePath, int SBMLLevel, TaskMonitor taskMonitor,
    		 KeggSaveAsSBMLAction.SaveSBMLTask saveSBMLTask) {
 		parentTask2 = saveSBMLTask;
 		if (keggTranslatorJarFile == null || !keggTranslatorJarFile.exists()) {
@@ -47,15 +47,15 @@ public class KGMLConverter {
 		
 		command = String.format("java -jar %s --input %s --output %s --format %s",
                 keggTranslatorJarFile.getAbsolutePath(),
-                "\"" + kgmlFile.getAbsolutePath() + "\"",
-                "\"" + outFilePath + "\"",
+                kgmlFile.getAbsolutePath(),
+                outFilePath,
                 SBMLString);
 		
         ParsingReportGenerator.getInstance().appendLine("Calling KeggTranslator with the command: \n" + command);
         ExecuteCommandTask executeCommandTask = new ExecuteCommandTask(command);
         executeCommandThread = new Thread(executeCommandTask);
-        boolean success = true;
-        int maxTime = 15000;
+      
+        int maxTime = 30000;
         long initTime = System.currentTimeMillis();
         long maxExecutionTime = initTime + maxTime;
         executeCommandThread.start();
@@ -68,13 +68,13 @@ public class KGMLConverter {
                 taskMonitor.setStatusMessage(message);
                 executeCommandThread.interrupt();
                 destroyProcess(executeCommandTask);
-                success = false;
+               
                 break;
             }
 
             try {
                 Thread.yield();
-                Thread.sleep(2000);
+                Thread.sleep(25000);
             } catch (InterruptedException t) {
                 t.printStackTrace();
             }
@@ -83,19 +83,19 @@ public class KGMLConverter {
         if (executeCommandThread.isAlive()) {
             executeCommandThread.interrupt();
             destroyProcess(executeCommandTask);
-            success = false;
+           
         }
 //        File outFile = new File(outFilePath);
 //        success = outFile.exists() && outFile.length() >0 ;
 
-        return success;
+        return;
 		
     }
 		
 		
 		
 		
-    public boolean translateFromCmd(File kgmlFile, String outFilePath, int bioPaxLevel, TaskMonitor taskMonitor,
+    public void translateFromCmd(File kgmlFile, String outFilePath, int bioPaxLevel, TaskMonitor taskMonitor,
                                     KeggSaveAsBioPAXAction.SaveBioPAXTask saveBioPAXTask) {
         parentTask = saveBioPAXTask;
         if (keggTranslatorJarFile == null || !keggTranslatorJarFile.exists()) {
@@ -120,16 +120,16 @@ public class KGMLConverter {
 
         command = String.format("java -jar %s --input %s --output %s --format %s",
                 keggTranslatorJarFile.getAbsolutePath(),
-                "\"" + kgmlFile.getAbsolutePath() + "\"",
-                "\"" + outFilePath + "\"",
+                kgmlFile.getAbsolutePath(),
+                outFilePath,
                 bioPaxLevelString);
         ParsingReportGenerator.getInstance().appendLine("Calling KeggTranslator with the command: \n" + command);
 
 
         ExecuteCommandTask executeCommandTask = new ExecuteCommandTask(command);
         executeCommandThread = new Thread(executeCommandTask);
-        boolean success = true;
-        int maxTime = 15000;
+       
+        int maxTime = 30000;
         long initTime = System.currentTimeMillis();
         long maxExecutionTime = initTime + maxTime;
         executeCommandThread.start();
@@ -142,13 +142,13 @@ public class KGMLConverter {
                 taskMonitor.setStatusMessage(message);
                 executeCommandThread.interrupt();
                 destroyProcess(executeCommandTask);
-                success = false;
+               
                 break;
             }
 
             try {
                 Thread.yield();
-                Thread.sleep(2000);
+                Thread.sleep(25000);
             } catch (InterruptedException t) {
                 t.printStackTrace();
             }
@@ -157,12 +157,12 @@ public class KGMLConverter {
         if (executeCommandThread.isAlive()) {
             executeCommandThread.interrupt();
             destroyProcess(executeCommandTask);
-            success = false;
+           
         }
 //        File outFile = new File(outFilePath);
 //        success = outFile.exists() && outFile.length() >0 ;
 
-        return success;
+        return;
 
     }
 
@@ -182,8 +182,8 @@ public class KGMLConverter {
         private InputStream errorStream;
         private BufferedReader reader;
 
-        ExecuteCommandTask(String commmand) {
-            this.command = commmand;
+        ExecuteCommandTask(String command) {
+            this.command = command;
         }
 
         @Override
