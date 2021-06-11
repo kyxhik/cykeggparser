@@ -55,7 +55,7 @@ public class KGMLConverter {
         ExecuteCommandTask executeCommandTask = new ExecuteCommandTask(command);
         executeCommandThread = new Thread(executeCommandTask);
       
-        int maxTime = 30000;
+        int maxTime = 90000;
         long initTime = System.currentTimeMillis();
         long maxExecutionTime = initTime + maxTime;
         executeCommandThread.start();
@@ -74,7 +74,7 @@ public class KGMLConverter {
 
             try {
                 Thread.yield();
-                Thread.sleep(25000);
+                Thread.sleep(75000);
             } catch (InterruptedException t) {
                 t.printStackTrace();
             }

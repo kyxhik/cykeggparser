@@ -57,7 +57,7 @@ public class KeggNetworkCreator {
         return network;
     }
 
-    private void parseKgml(File kgml) throws Exception {
+    public void parseKgml(File kgml) throws Exception {
 
         Parser parser = new Parser();
         

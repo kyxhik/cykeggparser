@@ -45,7 +45,7 @@ public class KeggLoadAction extends AbstractCyAction {
         	
             String kgmlFileName = keggLoadFrame.getSelectedFile().getAbsolutePath();
             LoggerFactory.getLogger(KeggLoadAction.class).info("Opening session file: " + kgmlFileName);
-            ParsingReportGenerator.getInstance().appendLine("kgml file name is:" + kgmlFileName);
+        //    ParsingReportGenerator.getInstance().appendLine("kgml file name is:" + kgmlFileName);
             
             // Create Task
             final ParseKgmlTask task = new ParseKgmlTask(kgmlFileName);
@@ -59,7 +59,7 @@ public class KeggLoadAction extends AbstractCyAction {
     }
 
 
-    class ParseKgmlTask extends AbstractTask {
+    public class ParseKgmlTask extends AbstractTask {
         private String fileName;
 
         public ParseKgmlTask(String fileName) {

@@ -2,10 +2,14 @@ package org.cytoscape.keggparser.actions;
 
 import org.cytoscape.application.swing.AbstractCyAction;
 import org.cytoscape.keggparser.KEGGParserPlugin;
+import org.cytoscape.keggparser.actions.KeggLoadAction.ParseKgmlTask;
 import org.cytoscape.keggparser.com.ParsingReportGenerator;
+import org.cytoscape.keggparser.dialogs.KeggLoadFrame;
 import org.cytoscape.keggparser.dialogs.KeggSaveDialog;
 import org.cytoscape.keggparser.parsing.KGMLConverter;
 import org.cytoscape.keggparser.parsing.KGMLCreator;
+import org.cytoscape.keggparser.parsing.KeggNetworkCreator;
+import org.cytoscape.keggparser.parsing.Parser;
 import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.TaskMonitor;
@@ -20,6 +24,7 @@ public class KeggSaveAsSBMLAction extends AbstractCyAction {
 	    private int SBMLLevel;
 	    private KeggSaveDialog saveDialog;
 	    private File outFile;
+	    private File kgmlFile;
 	    private String menuName;
 	    private String suffix = "";
 
@@ -54,6 +59,8 @@ public class KeggSaveAsSBMLAction extends AbstractCyAction {
 			
 		}
 		
+		
+		
 		public void actionPerformed(ActionEvent e) {
 			
 			
@@ -84,6 +91,11 @@ public class KeggSaveAsSBMLAction extends AbstractCyAction {
 	        }
 	    }
 	    
+		//private File getMyKgml() {
+			//KeggLoadAction keggLoadAction = new KeggLoadAction();
+			//kgmlFile = keggLoadAction.getKeggLoadFrame().getSelectedFile();
+			//return kgmlFile;
+	//	}
 		private File getSelectedFileFromSaveDialog() {
 	        
 	            saveDialog = new KeggSaveDialog(".sbml");
@@ -121,12 +133,25 @@ public class KeggSaveAsSBMLAction extends AbstractCyAction {
 	            ParsingReportGenerator.getInstance().appendLine("Saving the network as SBML File to " +
 	                    outFilePath);
 	            taskMonitor.setProgress(0);
+	           
+               
+               
 		
 	            try {
-	                File existingFile = new File(outFilePath);
-	                if ((existingFile).exists())
-	                    existingFile.delete();
-	                File kgmlFile = createKGMLFile(new File(outFilePath));
+	                //File existingFile = new File(outFilePath);
+	               // if ((existingFile).exists())
+	                //    existingFile.delete();
+	            	 ParsingReportGenerator.getInstance().appendLine("Am I inside try");
+	            	 
+	            	 File kgmlFile = KEGGParserPlugin.keggLoadAction.getKeggLoadFrame().getSelectedFile();
+	            	 
+	            	
+	            	 
+	  	             ParsingReportGenerator.getInstance().appendLine("kgml file is: " + kgmlFile);
+	              
+	           
+	               
+	                
 	                taskMonitor.setStatusMessage("Converting KGML file " + kgmlFile.getAbsolutePath()
 	                        + " to " + suffix + " file");
 	                KGMLConverter kgmlConverter = new KGMLConverter();
@@ -153,15 +178,7 @@ public class KeggSaveAsSBMLAction extends AbstractCyAction {
 	            }
 	        }
 		
-	        private File createKGMLFile(File outFile) throws Exception {
-	            File kgmlFile = getKGMLFile(outFile);
-	            KGMLCreator kgmlCreator = new KGMLCreator();
-	            kgmlCreator.setFilterForConversion(KGMLConverter.SBML);
-	            kgmlCreator.createKGML(KEGGParserPlugin.cyApplicationManager.getCurrentNetwork(), kgmlFile);
-	            taskMonitor.setStatusMessage("KGML file " + kgmlFile.getAbsolutePath() + " successfully generated.");
-	            ParsingReportGenerator.getInstance().appendLine("KGML file saved to " + kgmlFile.getAbsolutePath());
-	            return kgmlFile;
-	        }
+	      
 
 	        @Override
 	        public void cancel() {
@@ -177,26 +194,7 @@ public class KeggSaveAsSBMLAction extends AbstractCyAction {
 	        }
 	    }
 		
-		private File getKGMLFile(File outFile) {
-	        String kgmlFileName;
-	        if (outFile.getName().contains(suffix))
-	            kgmlFileName = outFile.getName().replace(suffix, ".xml");
-	        else
-	            kgmlFileName = outFile.getName() + ".xml";
-	        
-	        
-	      //  if (outFile.getName().contains(" "))
-	        //	kgmlFileName = outFile.getName().replace(" ", "_");
-	        
-	        File kgmlDir = new File(KEGGParserPlugin.getKEGGParserDir(), "/kgml");
-	        if (!kgmlDir.exists())
-	            if (!kgmlDir.mkdir()) {
-	                LoggerFactory.getLogger(KeggSaveAsSBMLAction.class).
-	                        error("Error creating directory " + kgmlDir.getAbsolutePath());
-	                kgmlDir = KEGGParserPlugin.getKEGGParserDir();
-	            }
-	        return new File(kgmlDir, kgmlFileName);
-	    }
+		
 	        
 	        
 	        
